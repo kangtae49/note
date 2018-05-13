@@ -42,7 +42,7 @@ RUN \
   rm -rf /var/cache/oracle-jdk8-installer
 
 # MYSQL
-RUN apt-get install -y mysql
+RUN apt-get install -y mysql-server
 EXPOSE 3306
 
 
