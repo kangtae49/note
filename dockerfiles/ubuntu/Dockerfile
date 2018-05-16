@@ -52,6 +52,6 @@ RUN apt-get update && \
         chown -R mysql:mysql /var/log/mysql
 
 
-VOLUME ["/apps"]
+VOLUME ["/apps", "/var/lib/mysql"]
 
 WORKDIR /apps
