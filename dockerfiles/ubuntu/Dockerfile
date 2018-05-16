@@ -42,9 +42,14 @@ RUN \
   rm -rf /var/cache/oracle-jdk8-installer
 
 # MYSQL
-RUN apt-get update
-RUN apt-get install -y mysql-server
-EXPOSE 3306
+RUN apt-get update && \
+        apt-get -y install mysql-server && \
+        mkdir -p /var/lib/mysql && \
+        mkdir -p /var/run/mysqld && \
+        mkdir -p /var/log/mysql && \
+        chown -R mysql:mysql /var/lib/mysql && \
+        chown -R mysql:mysql /var/run/mysqld && \
+        chown -R mysql:mysql /var/log/mysql
 
 
 VOLUME ["/apps"]
