@@ -53,6 +53,19 @@ RUN apt-get update && \
 
 COPY mysqld_charset.cnf /etc/mysql/conf.d/mysqld_charset.cnf
 
+
+# mariadb
+#RUN apt-get update && \
+#        apt-get -y install mariadb-server && \
+#        mkdir -p /var/lib/mysql && \
+#        mkdir -p /var/run/mysqld && \
+#        mkdir -p /var/log/mysql && \
+#        chown -R mysql:mysql /var/lib/mysql && \
+#        chown -R mysql:mysql /var/run/mysqld && \
+#        chown -R mysql:mysql /var/log/mysql
+
+#COPY mysql.cnf /etc/mysql/conf.d/mysql.cnf
+
 VOLUME ["/apps", "/var/lib/mysql"]
 
 WORKDIR /apps
