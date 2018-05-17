@@ -51,6 +51,7 @@ RUN apt-get update && \
         chown -R mysql:mysql /var/run/mysqld && \
         chown -R mysql:mysql /var/log/mysql
 
+COPY mysqld_charset.cnf /etc/mysql/conf.d/mysqld_charset.cnf
 
 VOLUME ["/apps", "/var/lib/mysql"]
 
