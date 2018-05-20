@@ -2,6 +2,7 @@ package mail;
 
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 import javax.mail.Authenticator;
 import javax.mail.Flags;
@@ -24,13 +25,14 @@ public class IMAPClient {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
+		
 
 		Properties props = new Properties();
-//		props.put("mail.imap.host", "xxxx");
+//		props.put("mail.imap.host", "imap.gmail.com");
 //		props.put("mail.imap.port", "993");
 //		props.put("mail.store.protocol", "imaps");
 
-//		props.put("mail.imap.host", "xxxx");
+//		props.put("mail.imap.host", "imap.worksmobile.com");
 //		props.put("mail.imap.port", "993");
 //		props.put("mail.store.protocol", "imaps");
 //		props.put("mail.imap.auth", "true");
@@ -40,7 +42,7 @@ public class IMAPClient {
 //		Authenticator auth = new Authenticator() {
 //			@Override
 //			protected PasswordAuthentication getPasswordAuthentication() {
-//				return new PasswordAuthentication("xxxxx@xxxxx", "xxxxx");
+//				return new PasswordAuthentication("xxx@gmail.com", "xxx");
 //			}
 //		};
 		
@@ -52,8 +54,8 @@ public class IMAPClient {
 		IMAPStore store = (IMAPStore)session.getStore("imaps");
 		
 		//store.connect();
-//		store.connect("imap.gmail.com", "xxxx@xxxxx", "xxxx");
-		store.connect("imap.worksmobile.com", "xxxx@xxxx", "xxxx");
+		store.connect("imap.gmail.com", "xxx@gmail.com", "xxx");
+//		store.connect("imap.worksmobile.com", "xxx@xxx", "xxx!");
 
 		System.out.println("SORT:" + store.hasCapability("SORT*"));
 		
@@ -65,18 +67,27 @@ public class IMAPClient {
 //		
 //		Folder [] sharedFolders = store.getSharedNamespaces();
 //		System.out.println(sharedFolders.length);
-//		Folder [] userFolders = store.getUserNamespaces("kangtae49@gmail.com");
+//		Folder [] userFolders = store.getUserNamespaces("xxx@gmail.com");
 //		System.out.println(userFolders.length);
 		
 		Folder defaultFolder = store.getDefaultFolder();
 		
 		System.out.println("getSeparator:" + defaultFolder.getSeparator());
 //		Folder [] folders = defaultFolder.list("*");
+		for (Folder tmpFolder : defaultFolder.list("*")){
+			System.out.println(tmpFolder.getFullName());
+		}
+		
+		
 		Folder [] folders = defaultFolder.list("INBOX");
 		for (int i=0; i<folders.length; i++){
+			Folder folder = folders[i];
+			IMAPFolder imapFolder = (IMAPFolder)folder;
+			UIDFolder uidFolder = (UIDFolder)folder;
+			
 //			UIDFolder folder = (UIDFolder)folders[i];
-			IMAPFolder folder = (IMAPFolder)folders[i];
-			System.out.println("-------------------");
+//			IMAPFolder folder = (IMAPFolder)folders[i];
+			System.out.println(folder.getFullName() + "-------------------");
 			
 			
 			System.out.println("getFullName:" + folder.getFullName());
@@ -129,36 +140,61 @@ public class IMAPClient {
 					};
 					
 //					Message [] messages = folder.getSortedMessages(term, sterm);
-					Message [] messages = folder.getMessages();
 					
 					
-					for(int j=0; j<messages.length; j++){
+					int pageNo = 1; // 1~
+					int pageSize = 10; //
+					
+					Message [] messages = folder.search(sterm);
+					
+					int totalCnt = messages.length;
+					
+					int startIdx = totalCnt - pageNo*pageSize;
+					int endIdx = startIdx + pageSize -1;
+					if (startIdx < 0){
+						startIdx = 0;
+					}
+					if (endIdx >= totalCnt){
+						endIdx = totalCnt - 1;
+					}
+					
+					System.out.println("totalCnt:" + totalCnt);
+					System.out.println("startIdx:" + startIdx);
+					System.out.println("endIdx:" + endIdx);
+//					Message msgFirst = sMessage[0];
+//					Message msgLast = sMessage[totalCnt-1];
+//					System.out.println("totalCnt:" + totalCnt);
+					
+					
+					
+					
+//					Message [] messages = folder.getMessages();
+					for(int j=endIdx; j>=startIdx; j--){
+						System.out.println("----------------");
 						Message message = messages[j];
-						long uid = folder.getUID(message);
+						
+						long uid = uidFolder.getUID(message);
 						System.out.println("UID:" + uid);
-						if(j == 0){
-							
-							Flags msgFlags = message.getFlags();
-							Flag [] systemFlags = msgFlags.getSystemFlags();
-							String [] userFlags = msgFlags.getUserFlags();
-							System.out.println("ANSWERED:" + message.isSet(Flag.ANSWERED));
-							System.out.println("DELETED:" + message.isSet(Flag.DELETED));
-							System.out.println("DRAFT:" + message.isSet(Flag.DRAFT));
-							System.out.println("FLAGGED:" + message.isSet(Flag.FLAGGED));  // 별
-							System.out.println("RECENT:" + message.isSet(Flag.RECENT));
-							System.out.println("SEEN:" + message.isSet(Flag.SEEN));
-							System.out.println("USER:" + message.isSet(Flag.USER));
-							
-							
-							
-							
-							System.out.println("userFlags:" + Arrays.toString(userFlags));
+						Flags msgFlags = message.getFlags();
+						Flag [] systemFlags = msgFlags.getSystemFlags();
+						String [] userFlags = msgFlags.getUserFlags();
+						System.out.println("ANSWERED:" + message.isSet(Flag.ANSWERED));
+						System.out.println("DELETED:" + message.isSet(Flag.DELETED));
+						System.out.println("DRAFT:" + message.isSet(Flag.DRAFT));
+						System.out.println("FLAGGED:" + message.isSet(Flag.FLAGGED));  // 별
+						System.out.println("RECENT:" + message.isSet(Flag.RECENT));
+						System.out.println("SEEN:" + message.isSet(Flag.SEEN));
+						System.out.println("USER:" + message.isSet(Flag.USER));
+						
+						// message.setFlag(Flag.FLAGGED, true);
+						
+						
+						
+						System.out.println("userFlags:" + Arrays.toString(userFlags));
 
-							Flags tmp = new Flags("$star");
-							message.setFlags(tmp, false);
-							System.out.println("Subject:" + message.getSubject());
-							break;
-						}
+						// Flags tmp = new Flags("$star");
+						// message.setFlags(tmp, false);
+						System.out.println("Subject:" + message.getSubject());
 					}
 					folder.close(true);
 				}
