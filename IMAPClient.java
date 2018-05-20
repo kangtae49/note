@@ -205,6 +205,8 @@ public class IMAPClient {
 						    	String filename = part.getFileName();
 						    	System.out.println("part ContentType:" + part.getContentType());
 						    	System.out.println("filename:" + filename);
+							System.out.println("filename:" + MimeUtility.decodeText(filename));
+
 						    	InputStream input = part.getInputStream();
 						        // this part is attachment
 						        // code to save attachment...
