@@ -71,6 +71,9 @@ public class IMAPClient {
 //		System.out.println(userFolders.length);
 		
 		Folder defaultFolder = store.getDefaultFolder();
+		//Folder newFolder = defaultFolder.getFolder("TMP");
+		//boolean isCreated = newFolder.create(Folder.HOLDS_MESSAGES);
+		//boolean isCreated = newFolder.delete(true);		
 		
 		System.out.println("getSeparator:" + defaultFolder.getSeparator());
 //		Folder [] folders = defaultFolder.list("*");
