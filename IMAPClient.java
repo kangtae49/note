@@ -195,6 +195,28 @@ public class IMAPClient {
 						// Flags tmp = new Flags("$star");
 						// message.setFlags(tmp, false);
 						System.out.println("Subject:" + message.getSubject());
+						System.out.println("getContentType:" + message.getContentType());
+						
+						Multipart multiPart = (Multipart)message.getContent();
+						for (int l = 0; l < multiPart.getCount(); l++) {
+						    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(l);
+						    System.out.println("getDisposition:" + part.getDisposition());
+						    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+						    	String filename = part.getFileName();
+						    	System.out.println("part ContentType:" + part.getContentType());
+						    	System.out.println("filename:" + filename);
+						    	InputStream input = part.getInputStream();
+						        // this part is attachment
+						        // code to save attachment...
+						    	
+						    	
+//						    	HttpHeaders headers = new HttpHeaders();
+//						    	headers.setContentType(MediaType.parseMediaType("your content type here"));
+//						    	headers.set("Content-Disposition", "attachment; filename=fileName.jpg");
+//						    	headers.setContentLength(fileContent.length);
+//						    	return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+						    }
+						}						
 					}
 					folder.close(true);
 				}
