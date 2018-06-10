@@ -33,9 +33,14 @@ $(document).ready(function(){
 	var list = new MyList('#tbl', {
 		id:'id', 
 		data:data,
+		converter: {
+			'nm': function(val){
+				return 'aa' + val;
+			}
+		},
 		col_fun: {
 			'col5': function(id, colname, row, tr, td){
-				td.html("hello");
+				row['col5'] = 'hello';
 			}
 		},
 		event: {
