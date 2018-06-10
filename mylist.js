@@ -6,6 +6,7 @@ var MyList = function (target, options){
 	var default_settings = {
 		skip: 1,
 		col_fun: {}, 
+		converter: {},
 		use_tr_clone: true,
 		data: [],
 		id: '',
@@ -76,6 +77,10 @@ MyList.prototype.load = function (data) {
 		$.each(settings.columns, function(col_i, colname){
 			td = tr.find('td:eq(' + col_i + ')');
 			coltype = settings.coltypes[colname];
+			
+			if(settings.col_fun.hasOwnProperty(colname)){
+				settings.col_fun[colname](id, colname, row, tr, td);
+			}
 			if(coltype){
 				tag_val = td.find(coltype);
 				if(coltype.indexOf('checkbox') >= 0){
@@ -91,17 +96,26 @@ MyList.prototype.load = function (data) {
 						}
 					});
 				}else if(coltype == 'textarea'){
-					tag_val.val(row[colname]);
+					val = row[colname];
+					if (settings.converter.hasOwnProperty(colname)){
+						val = settings.converter[colname](val);
+					}
+					tag_val.val(val);
 				}else{
-					tag_val.html(row[colname]);
+					val = row[colname];
+					if (settings.converter.hasOwnProperty(colname)){
+						val = settings.converter[colname](val);
+					}
+					tag_val.html(escape(val));
 				}
 			}else{
-				td.html(row[colname]);
+				val = row[colname];
+				if (settings.converter.hasOwnProperty(colname)){
+					val = settings.converter[colname](val);
+				}
+				td.html(escape(val));
 			}
 			
-			if(settings.col_fun.hasOwnProperty(colname)){
-				settings.col_fun[colname](id, colname, row, tr, td);
-			}
 			if(settings.event){
 				td.click({id:id, colname:colname, row:row, tr:tr, td:td}, function (event){
 					var id = event.data.id;
